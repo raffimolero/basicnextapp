@@ -2,7 +2,14 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { House, UserCog, ChevronDown, ShieldCheck, LucideIcon, LogOut } from "lucide-react";
+import {
+  House,
+  UserCog,
+  ChevronDown,
+  ShieldCheck,
+  LucideIcon,
+  LogOut,
+} from "lucide-react";
 import { useSession, signOut } from "@/lib/auth-client";
 import ConfirmModal from "@/components/ConfirmModal";
 import { showMessage } from "@/components/MessageModal";
@@ -10,7 +17,12 @@ import SessionTimeoutWrapper from "@/components/SessionTimeoutWrapper";
 import SessionSync from "@/components/SessionSync";
 import EditUserModal from "./admin/users/EditUserModal";
 import ChangeUserPasswordModal from "./admin/users/ChangeUserPasswordModal";
-import { getMyProfile, updateMyProfile, changeMyPassword, UserProfile } from "./actions";
+import {
+  getMyProfile,
+  updateMyProfile,
+  changeMyPassword,
+  UserProfile,
+} from "./actions";
 
 // --- Reusable Dropdown Component ---
 interface NavItem {
@@ -20,7 +32,13 @@ interface NavItem {
   className?: string;
 }
 
-function NavDropdown({ label, Icon, items, isOpen, onToggle }: {
+function NavDropdown({
+  label,
+  Icon,
+  items,
+  isOpen,
+  onToggle,
+}: {
   label: string;
   Icon: LucideIcon;
   items: NavItem[];
@@ -34,13 +52,22 @@ function NavDropdown({ label, Icon, items, isOpen, onToggle }: {
         className="flex items-center gap-2 text-lg font-bold px-4 py-2 rounded hover:bg-white hover:text-blue-600 transition-colors"
       >
         <Icon size={20} /> {label}
-        <ChevronDown className={`transition-transform ${isOpen ? "rotate-180" : ""}`} />
+        <ChevronDown
+          className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
+        />
       </button>
 
       {isOpen && (
         <ul className="absolute right-0 mt-2 w-52 bg-white border rounded shadow-lg z-50 text-gray-800 py-1 overflow-hidden">
           {items.map((item, index) => (
-            <li key={item.label} className={index === items.length - 1 && items.length > 2 ? "border-t border-gray-100" : ""}>
+            <li
+              key={item.label}
+              className={
+                index === items.length - 1 && items.length > 2
+                  ? "border-t border-gray-100"
+                  : ""
+              }
+            >
               <button
                 onClick={item.onClick}
                 className={`w-full text-left px-4 py-3 hover:bg-gray-100 transition-colors flex items-center gap-2 ${item.className || ""}`}
@@ -57,12 +84,17 @@ function NavDropdown({ label, Icon, items, isOpen, onToggle }: {
 }
 
 // --- Main Layout ---
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const router = useRouter();
   const { data: session, isPending } = useSession();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
-  const [currentUserProfile, setCurrentUserProfile] = useState<UserProfile | null>(null);
+  const [currentUserProfile, setCurrentUserProfile] =
+    useState<UserProfile | null>(null);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
   // Store the initial user ID to detect session changes
@@ -71,8 +103,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   useEffect(() => {
     if (!isPending && session?.user && !initializationRef.current) {
-        initialUserId.current = session.user.id;
-        initializationRef.current = true;
+      initialUserId.current = session.user.id;
+      initializationRef.current = true;
     }
   }, [session, isPending]);
 
@@ -80,7 +112,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (!isPending && session?.user) {
       const enforce = async () => {
         if ((session.user as any).active === false) {
-          await showMessage("Your account is inactive. Please contact the administrator.");
+          await showMessage(
+            "Your account is inactive. Please contact the administrator.",
+          );
           await signOut();
           router.push("/");
         }
@@ -89,14 +123,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   }, [session, isPending, router]);
 
-  const toggleMenu = (name: string) => setOpenMenu(openMenu === name ? null : name);
-  
+  const toggleMenu = (name: string) =>
+    setOpenMenu(openMenu === name ? null : name);
+
   const openEditProfile = async () => {
     setOpenMenu(null);
     try {
       // Use the INITIAL user ID, not the potentially updated session ID
       const targetUserId = initialUserId.current;
-      
+
       // Pass current session ID to verify we are still the same user
       const profile = await getMyProfile(targetUserId || undefined);
       if (profile) {
@@ -106,7 +141,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         await showMessage("Failed to fetch profile");
       }
     } catch (error: unknown) {
-      if (error instanceof Error && (error.message === "SessionMismatch" || error.message.includes("SessionMismatch"))) {
+      if (
+        error instanceof Error &&
+        (error.message === "SessionMismatch" ||
+          error.message.includes("SessionMismatch"))
+      ) {
         await showMessage("Session changed in another tab. Reloading...");
         window.location.reload();
         return;
@@ -131,7 +170,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         await showMessage("Failed to fetch profile");
       }
     } catch (error: unknown) {
-      if (error instanceof Error && (error.message === "SessionMismatch" || error.message.includes("SessionMismatch"))) {
+      if (
+        error instanceof Error &&
+        (error.message === "SessionMismatch" ||
+          error.message.includes("SessionMismatch"))
+      ) {
         await showMessage("Session changed in another tab. Reloading...");
         window.location.reload();
         return;
@@ -155,7 +198,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       router.refresh();
       await showMessage("Profile updated successfully.");
     } catch (error: unknown) {
-      if (error instanceof Error && (error.message === "SessionMismatch" || error.message.includes("SessionMismatch"))) {
+      if (
+        error instanceof Error &&
+        (error.message === "SessionMismatch" ||
+          error.message.includes("SessionMismatch"))
+      ) {
         await showMessage("Session changed in another tab. Reloading...");
         window.location.reload();
         return;
@@ -165,21 +212,28 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   };
 
-  const handleChangePasswordSubmit = async (userId: string, newPassword: string) => {
+  const handleChangePasswordSubmit = async (
+    userId: string,
+    newPassword: string,
+  ) => {
     try {
-        await changeMyPassword(userId, newPassword);
-        setIsChangePasswordOpen(false);
-        // Optional: Sign out the user or show success message?
-        // For now, just close modal.
-        await showMessage("Password changed successfully.");
+      await changeMyPassword(userId, newPassword);
+      setIsChangePasswordOpen(false);
+      // Optional: Sign out the user or show success message?
+      // For now, just close modal.
+      await showMessage("Password changed successfully.");
     } catch (error: unknown) {
-        if (error instanceof Error && (error.message === "SessionMismatch" || error.message.includes("SessionMismatch"))) {
-            await showMessage("Session changed in another tab. Reloading...");
-            window.location.reload();
-            return;
-        }
-        console.error("Error changing password:", error);
-        await showMessage("Failed to change password");
+      if (
+        error instanceof Error &&
+        (error.message === "SessionMismatch" ||
+          error.message.includes("SessionMismatch"))
+      ) {
+        await showMessage("Session changed in another tab. Reloading...");
+        window.location.reload();
+        return;
+      }
+      console.error("Error changing password:", error);
+      await showMessage("Failed to change password");
     }
   };
 
@@ -191,6 +245,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
     if (action === "User Management") {
       router.push("/dashboard/admin/users");
+      return;
+    }
+    if (action === "Medical Tests") {
+      router.push("/dashboard/admin/medicaltests");
+      return;
+    }
+    if (action === "Test Categories") {
+      router.push("/dashboard/admin/testcategories");
+      return;
+    }
+    if (action === "UOM") {
+      router.push("/dashboard/admin/uom");
       return;
     }
     await showMessage(`Clicked: ${action}`);
@@ -216,9 +282,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   ];
 
   const adminItems = [
-    { label: "User Management", onClick: () => handleAction("User Management") },
+    {
+      label: "User Management",
+      onClick: () => handleAction("User Management"),
+    },
     // CHANGED: Removed router.push and replaced with handleAction to show the alert
-    { label: "Role Management", onClick: () => handleAction("Role Management") },
+    {
+      label: "Role Management",
+      onClick: () => handleAction("Role Management"),
+    },
+    { label: "Medical Tests", onClick: () => handleAction("Medical Tests") },
+    {
+      label: "Test Categories",
+      onClick: () => handleAction("Test Categories"),
+    },
+    { label: "UOM", onClick: () => handleAction("UOM") },
   ];
 
   const handleTimeoutLogout = async () => {
@@ -236,22 +314,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="min-h-screen flex flex-col bg-gray-50">
         <header className="bg-blue-600 shadow px-6 py-2 flex items-center justify-between text-white">
           <button
-            onClick={() => { router.push("/dashboard"); setOpenMenu(null); }}
+            onClick={() => {
+              router.push("/dashboard");
+              setOpenMenu(null);
+            }}
             className="flex items-center gap-2 text-lg font-bold px-4 py-2 rounded hover:bg-white hover:text-blue-600 transition-colors"
           >
             <House size={20} /> Home
           </button>
 
           <div className="flex items-center gap-6">
-            <NavDropdown 
-              label="My Profile" Icon={UserCog} items={profileItems} 
-              isOpen={openMenu === "profile"} onToggle={() => toggleMenu("profile")} 
+            <NavDropdown
+              label="My Profile"
+              Icon={UserCog}
+              items={profileItems}
+              isOpen={openMenu === "profile"}
+              onToggle={() => toggleMenu("profile")}
             />
-            <NavDropdown 
-              label="Admin" Icon={ShieldCheck} items={adminItems} 
-              isOpen={openMenu === "admin"} onToggle={() => toggleMenu("admin")} 
+            <NavDropdown
+              label="Admin"
+              Icon={ShieldCheck}
+              items={adminItems}
+              isOpen={openMenu === "admin"}
+              onToggle={() => toggleMenu("admin")}
             />
-            
+
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 text-lg font-bold px-4 py-2 rounded hover:bg-red-600 hover:text-white text-red-100 transition-colors ml-2 border border-transparent hover:border-red-400"
@@ -277,7 +364,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </footer>
 
         {/* Edit Profile Modal */}
-        <EditUserModal 
+        <EditUserModal
           isOpen={isEditProfileOpen}
           onClose={() => setIsEditProfileOpen(false)}
           onEdit={handleEditProfileSubmit}
@@ -286,7 +373,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         />
 
         {/* Change Password Modal */}
-        <ChangeUserPasswordModal 
+        <ChangeUserPasswordModal
           isOpen={isChangePasswordOpen}
           onClose={() => setIsChangePasswordOpen(false)}
           onChangePassword={handleChangePasswordSubmit}

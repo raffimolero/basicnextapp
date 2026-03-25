@@ -20,9 +20,9 @@ export async function getMedicalTests(): Promise<MedicalTest[]> {
       mt.id, 
       mt.name, 
       mt.description, 
-      u.name as uomName, 
-      tc.name as categoryName, 
-      mt.normalmin, 
+      u.name as "uomName",
+      tc.name as "categoryName",
+      mt.normalmin,
       mt.normalmax,
       mt.iduom,
       mt.idcategory

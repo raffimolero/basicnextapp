@@ -16,6 +16,9 @@ import DeleteTestCategoryModal from "./DeleteTestCategoryModal";
 import EditTestCategoryModal from "./EditTestCategoryModal";
 import PageGuardWrapper from "@/components/PageGuardWrapper";
 import ButtonGuardWrapper from "@/components/ButtonGuardWrapper";
+import DownloadTestCategoriesPdf from "./DownloadTestCategoriesPdf";
+import ConfirmModal from "@/components/ConfirmModal";
+import { downloadTestCategoriesExcel } from "./DownloadTestCategories";
 
 export default function Page() {
   const { data: session, isPending } = useSession();
@@ -95,6 +98,24 @@ export default function Page() {
       tc.description.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
+  const handleDownloadExcel = async () => {
+    const confirmed = await ConfirmModal("Download Test Categories to Excel?", {
+      okText: "Yes, Download",
+      cancelText: "Cancel",
+      okColor: "bg-green-600 hover:bg-green-700",
+    });
+
+    if (!confirmed) return;
+
+    const filtered = testCategories.filter(
+      (category) =>
+        category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        category.description.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+
+    downloadTestCategoriesExcel(filtered);
+  };
+
   return (
     <PageGuardWrapper requiredRoles={["ADMINISTRATOR"]}>
       <div className="space-y-4">
@@ -119,6 +140,35 @@ export default function Page() {
             >
               Clear
             </button>
+          </div>
+
+          <div className="flex gap-2">
+            <ButtonGuardWrapper
+              requiredRoles={[
+                "ADMINISTRATOR",
+                "USERS_CANDOWNLOADROLES",
+                "ROLES_CANDOWNLOADEXCEL",
+              ]}
+            >
+              <button
+                onClick={handleDownloadExcel}
+                className="rounded-md bg-green-600 px-5 py-2 text-sm font-semibold text-white hover:bg-green-700 transition-colors shadow-sm whitespace-nowrap"
+              >
+                Download Excel
+              </button>
+            </ButtonGuardWrapper>
+            <ButtonGuardWrapper
+              requiredRoles={[
+                "ADMINISTRATOR",
+                "USERS_CANPRINTROLES",
+                "ROLES_CANDOWNLOADPDF",
+              ]}
+            >
+              <DownloadTestCategoriesPdf
+                categories={filteredTestCategories}
+                searchQuery={searchQuery}
+              />
+            </ButtonGuardWrapper>
           </div>
 
           <ButtonGuardWrapper requiredRoles={["ADMINISTRATOR"]}>

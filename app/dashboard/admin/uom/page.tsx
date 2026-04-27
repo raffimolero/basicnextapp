@@ -80,6 +80,12 @@ export default function Page() {
     }
   };
 
+  const filteredUoms = uoms.filter(
+    (uom) =>
+      uom.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      uom.description.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
   const handleDownloadExcel = async () => {
     const confirmed = await ConfirmModal(
       "Download Units of Measure to Excel?",
@@ -92,24 +98,12 @@ export default function Page() {
 
     if (!confirmed) return;
 
-    const filtered = uoms.filter(
-      (uom) =>
-        uom.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        uom.description.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
-
-    downloadUomsExcel(filtered);
+    downloadUomsExcel(filteredUoms);
   };
 
   if (isPending || !session) {
     return <div className="p-6">Loading...</div>;
   }
-
-  const filteredUoms = uoms.filter(
-    (uom) =>
-      uom.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      uom.description.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
 
   return (
     <PageGuardWrapper requiredRoles={["ADMINISTRATOR"]}>

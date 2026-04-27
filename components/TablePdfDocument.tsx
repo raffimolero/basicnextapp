@@ -84,7 +84,7 @@ function TablePdfDocument<T>({
   searchQuery,
 }: TablePdfDocumentProps<T>) {
   const getColWidth = (key: string) => {
-    if (key === "rowNumber") return "8%";
+    if (key === "rowNumber" || key === "id") return "8%";
     const otherCols = columns.filter((c) => c.key !== "rowNumber").length;
     return `${92 / otherCols}%`;
   };

@@ -10,7 +10,7 @@ export interface Uom {
 
 export async function getUoms(): Promise<Uom[]> {
   const { rows } = await query<Uom>(
-    "SELECT id, name, description FROM public.uom ORDER BY id ASC",
+    "SELECT id, name, description FROM public.uom ORDER BY name ASC",
   );
   return rows;
 }

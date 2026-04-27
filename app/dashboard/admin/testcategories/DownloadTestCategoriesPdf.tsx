@@ -1,23 +1,23 @@
 "use client";
 
 import React from "react";
-import { Role } from "./actions";
-import RolesPdfDocument from "./RolesPdfDocument";
+import { TestCategory } from "./actions";
+import TestCategoriesPdfDocument from "./TestCategoriesPdfDocument";
 import ConfirmModal from "@/components/ConfirmModal";
 import { usePdfDownload } from "@/hooks/usePdfDownload";
 
-interface DownloadRolesPdfProps {
-  roles: Role[];
+interface DownloadTestCategoriesPdfProps {
+  categories: TestCategory[];
   searchQuery: string;
 }
 
-const DownloadRolesPdf: React.FC<DownloadRolesPdfProps> = ({
-  roles,
+const DownloadTestCategoriesPdf: React.FC<DownloadTestCategoriesPdfProps> = ({
+  categories,
   searchQuery,
 }) => {
   const { download, isGenerating } = usePdfDownload({
-    fileName: "Roles.pdf",
-    confirmMessage: "Download Roles to PDF?",
+    fileName: "TestCategories.pdf",
+    confirmMessage: "Download Test Categories to PDF?",
     confirm: ConfirmModal,
     confirmOptions: {
       okText: "Yes, Download",
@@ -28,9 +28,9 @@ const DownloadRolesPdf: React.FC<DownloadRolesPdfProps> = ({
 
   const handleDownload = () => {
     download(
-      <RolesPdfDocument
-        roles={roles}
-        totalCount={roles.length}
+      <TestCategoriesPdfDocument
+        categories={categories}
+        totalCount={categories.length}
         searchQuery={searchQuery}
       />,
     );
@@ -41,11 +41,10 @@ const DownloadRolesPdf: React.FC<DownloadRolesPdfProps> = ({
       onClick={handleDownload}
       disabled={isGenerating}
       className="rounded-md bg-purple-600 px-5 py-2 text-sm font-semibold text-white hover:bg-purple-700 transition-colors shadow-sm whitespace-nowrap"
-      title="Download PDF"
     >
       {isGenerating ? "Preparing PDF..." : "Download PDF"}
     </button>
   );
 };
 
-export default DownloadRolesPdf;
+export default DownloadTestCategoriesPdf;

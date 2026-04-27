@@ -10,6 +10,9 @@ import DeleteUomModal from "./DeleteUomModal";
 import EditUomModal from "./EditUomModal";
 import PageGuardWrapper from "@/components/PageGuardWrapper";
 import ButtonGuardWrapper from "@/components/ButtonGuardWrapper";
+import DownloadUomsPdf from "./DownloadUomsPdf";
+import ConfirmModal from "@/components/ConfirmModal";
+import { downloadUomsExcel } from "./DownloadUoms";
 
 export default function Page() {
   const { data: session, isPending } = useSession();
@@ -77,6 +80,27 @@ export default function Page() {
     }
   };
 
+  const handleDownloadExcel = async () => {
+    const confirmed = await ConfirmModal(
+      "Download Units of Measure to Excel?",
+      {
+        okText: "Yes, Download",
+        cancelText: "Cancel",
+        okColor: "bg-green-600 hover:bg-green-700",
+      },
+    );
+
+    if (!confirmed) return;
+
+    const filtered = uoms.filter(
+      (uom) =>
+        uom.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        uom.description.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+
+    downloadUomsExcel(filtered);
+  };
+
   if (isPending || !session) {
     return <div className="p-6">Loading...</div>;
   }
@@ -111,6 +135,32 @@ export default function Page() {
             >
               Clear
             </button>
+          </div>
+
+          <div className="flex gap-2">
+            <ButtonGuardWrapper
+              requiredRoles={[
+                "ADMINISTRATOR",
+                "USERS_CANDOWNLOADROLES",
+                "ROLES_CANDOWNLOADEXCEL",
+              ]}
+            >
+              <button
+                onClick={handleDownloadExcel}
+                className="rounded-md bg-green-600 px-5 py-2 text-sm font-semibold text-white hover:bg-green-700 transition-colors shadow-sm whitespace-nowrap"
+              >
+                Download Excel
+              </button>
+            </ButtonGuardWrapper>
+            <ButtonGuardWrapper
+              requiredRoles={[
+                "ADMINISTRATOR",
+                "USERS_CANPRINTROLES",
+                "ROLES_CANDOWNLOADPDF",
+              ]}
+            >
+              <DownloadUomsPdf uoms={filteredUoms} searchQuery={searchQuery} />
+            </ButtonGuardWrapper>
           </div>
 
           <ButtonGuardWrapper requiredRoles={["ADMINISTRATOR"]}>
